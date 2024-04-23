@@ -1,8 +1,0 @@
-language: julia
-
-julia:
-  - release
-  - 0.4
-
-script:
-    - julia -e 'versioninfo(); Pkg.init(); Pkg.clone(pwd()); Pkg.build("PowerLaws");Pkg.test("PowerLaws");'

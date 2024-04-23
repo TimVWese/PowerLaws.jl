@@ -1,4 +1,4 @@
-immutable con_powerlaw <: ContinuousUnivariateDistribution
+struct con_powerlaw <: ContinuousUnivariateDistribution
     α::Float64
     θ::Float64
 

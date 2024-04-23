@@ -1,4 +1,4 @@
-immutable dis_powerlaw <: DiscreteUnivariateDistribution
+struct dis_powerlaw <: DiscreteUnivariateDistribution
     α::Float64
     θ::Float64
 

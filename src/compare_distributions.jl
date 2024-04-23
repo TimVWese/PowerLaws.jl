@@ -1,4 +1,4 @@
-immutable compare_distributions
+struct compare_distributions
     data::AbstractArray
     log_likehoods_ratio::AbstractArray
     sig_level::Float64
