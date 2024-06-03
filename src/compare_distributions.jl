@@ -26,21 +26,16 @@ end
 
 
 
-function compare_distributions(d1::con_powerlaw, d2::DataType, data::AbstractArray; sig_level = 0.05)
-    if !(d2 <: ContinuousUnivariateDistribution)
-        println("Both distributions should be continuos.")
-        return Union{}
-    end
+function compare_distributions(d1::con_powerlaw, d2::Type{<:ContinuousUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
     xmin = d1.θ
     data = sort(data)
     data = data[findfirst(x -> x >= xmin, data): end]
     d2 = fit(d2, data)
-    
-    _compare_distributions(d1,d2,data,xmin,sig_level)
 
+    _compare_distributions(d1,d2,data,xmin,sig_level)
 end
 
-function compare_distributions(d1::dis_powerlaw, d2::DataType, data::AbstractArray; sig_level = 0.05)
+function compare_distributions(d1::dis_powerlaw, d2::Type{<:DiscreteUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
     if !(d2 <: DiscreteUnivariateDistribution)
         println("Both distributions should be discrete.")
         return Union{}
@@ -53,10 +48,10 @@ function compare_distributions(d1::dis_powerlaw, d2::DataType, data::AbstractArr
     _compare_distributions(d1,d2,data,xmin,sig_level)
 end
 
-function compare_distributions(d1::DataType, d2::DataType, data::AbstractArray, xmin::Number = 0; sig_level = 0.05)
-    if !(((d1 <: ContinuousUnivariateDistribution) && (d2 <: ContinuousUnivariateDistribution)) || ((d1 <: DiscreteUnivariateDistribution) && (d2 <: DiscreteUnivariateDistribution)))
-        println("Both distributions should be of same type (continuous or discrete).")
-        return Union{}
+function compare_distributions(d1::Type{<:UnivariateDistribution}, d2::Type{<:UnivariateDistribution}, data::AbstractArray, xmin::Number = 0; sig_level = 0.05)
+    if !(((d1 <: ContinuousUnivariateDistribution) && (d2 <: ContinuousUnivariateDistribution)) ||
+            ((d1 <: DiscreteUnivariateDistribution) && (d2 <: DiscreteUnivariateDistribution)))
+        @assert false "Both distributions should be either continuous or discrete."
     end
 
     if (xmin == 0)
@@ -84,7 +79,7 @@ function _compare_distributions(d1::UnivariateDistribution, d2::UnivariateDistri
     data = sort(data)
     xmin == 0 ? xmin = minimum(data) : data = data[findfirst(x -> x >= xmin, data): end]
     # Vuong's test
-    log_likehoods_ratio = logpdf(d1,data) - logpdf(d2,data)
+    log_likehoods_ratio = map(Base.Fix1(logpdf, d1), data) - map(Base.Fix1(logpdf, d2), data)
     n = length(log_likehoods_ratio)
     m = mean(log_likehoods_ratio)
     standard_deviation = std(log_likehoods_ratio)
@@ -98,7 +93,7 @@ function _compare_distributions(d1::UnivariateDistribution, d2::UnivariateDistri
     end
     
     # Clarke's test
-    # b = number of possitive values in log_likehoods_ratio
+    # b = number of positive values in log_likehoods_ratio
     b = sum(x->x > 0 ? 1 : 0, log_likehoods_ratio)
     preff_distr = 0
     if (b >= n/2)

@@ -1,8 +1,9 @@
 function bootstrap(data::AbstractArray,d::UnivariateDistribution;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
   n = length(data)
 
-  seed == 0 ? srand() : srand(seed)
-  statistic = Array(Tuple{typeof(d),Float64},no_of_sims)
+  seed == 0 ? Random.seed!() : Random.seed!(seed)
+  statistic = Array{Tuple{UnivariateDistribution, Float64}}(undef, no_of_sims)
+#  statistic = Array(Tuple{typeof(d),Float64},no_of_sims)
   for i=1:no_of_sims
     sim_data = sample(data, n, replace=true)
     statistic[i] =estimate_xmin(sim_data,typeof(d),xmins = xmins,xmax = xmax)
@@ -30,12 +31,11 @@ function bootstrap_p(data::AbstractArray,d::UnivariateDistribution;no_of_sims::I
 
   P = 0
   statistic = Array(Tuple{typeof(d),Float64},no_of_sims)
-  seed == 0 ? srand() : srand(seed)
+  seed == 0 ? Random.seed!() : Random.seed!(seed)
   for i=1:no_of_sims
     n1 = sum(map(x-> x>tail_p,rand(n)))
     n2 = n - n1
-    sim_data = Array(Float64,0)
-    append!(sim_data,sample(sort_data[1:tail_indx-1],n1,replace = true))
+    sim_data = sample(sort_data[1:tail_indx-1],n1,replace = true)
     append!(sim_data,rand(d,n2))
     statistic[i] = estimate_xmin(sim_data,typeof(d),xmins = xmins,xmax = xmax)
     if (KS_stat <= statistic[i][2])

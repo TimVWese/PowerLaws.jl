@@ -3,7 +3,7 @@ struct con_powerlaw <: ContinuousUnivariateDistribution
     θ::Float64
 
     function con_powerlaw(α::Real, θ::Real)
-        @check_args(con_powerlaw, α > zero(α) && θ > zero(θ))
+        @assert α > zero(α) && θ > zero(θ)
         new(α, θ)
     end
     con_powerlaw(α::Real) = con_powerlaw(α, 1.0)
@@ -41,7 +41,7 @@ entropy(d::con_powerlaw) = ((α, θ) = params(d); log(θ / (α-1)) + 1.0 / (α-1
 
 #### Evaluation
 
-function pdf(d::con_powerlaw, x::Float64)
+function pdf(d::con_powerlaw, x::Real)
     (α, θ) = params(d)
     x >= θ ? ((α-1.0)/θ) * ((x/θ)^(-α)) : 0.0
 end
@@ -49,25 +49,19 @@ end
 function pdf(d::con_powerlaw, x::AbstractArray)
     (α, θ) = params(d)
     cons = ((α-1.0)/θ)
-    pdfs = Array(Float64,0)
-    for num in x
-        push!(pdfs,(num >= θ ? cons * ((x/θ)^(-α)) : 0.0))
-    end
+    pdfs = [num >= θ ? cons * ((x/θ)^(-α)) : 0.0 for num in x]
     return pdfs
 end
 
-function logpdf(d::con_powerlaw, x::Float64)
+function logpdf(d::con_powerlaw, x::Real)
     (α, θ) = params(d)
     x >= θ ? log(α-1.0) - log(θ) - α * log(x/θ) : -Inf
 end
 
-function logpdf(d::con_powerlaw, x::AbstractArray)
+function logpdf(d::con_powerlaw, x::AbstractArray{<:Real})
     (α, θ) = params(d)
     l_const = log(α-1.0) - log(θ)
-    lpdfs = Array(Float64,0)
-    for num in x
-        push!(lpdfs,(num >= θ ? l_const - α * log(num/θ) : -Inf))
-    end
+    lpdfs = [num >= θ ? l_const - α * log(num/θ) : -Inf for num in x]
     return lpdfs
 end
 
@@ -94,15 +88,12 @@ rand(d::con_powerlaw) = quantile(d,rand())
 
 ## Fitting
 
-function fit_mle{T <: Real}(::Type{con_powerlaw}, x::AbstractArray{T})
+function fit_mle(::Type{con_powerlaw}, x::AbstractArray{<:Real})
     θ = minimum(x)
 
     n = length(x)
     lθ = log(θ)
-    temp1 = zero(T)
-    for i=1:n
-        temp1 += log(x[i]) - lθ
-    end
+    temp1 = sum(log.(x) .- lθ)
     α = 1.0+n*(temp1)^(-1.0)
 
     return con_powerlaw(α, θ)

@@ -13,14 +13,7 @@ function init_xmins(data::AbstractArray,xmins::AbstractArray,xmax::Int64)
       xmins = xmins[findfirst(x -> x > 0,xmins), end]
     end
   else
-    real_xmins = Array(Bool,length(xmins))
-    for i=1:length(xmins)
-      if (haskey(bins_data,xmins[i]))
-        real_xmins[i] = true
-      else
-        real_xmins[i] = false
-      end
-    end
+    real_xmins = [haskey(bins_data,x) for x in xmins]
     xmins = xmins[real_xmins]
   end
   return sorted_data,bins_data,xmins
@@ -74,8 +67,8 @@ function estimate_xmin(data::AbstractArray,distribution::Type{con_powerlaw};xmin
 end
 
 function estimate_xmin(data::AbstractArray,distribution::Type{dis_powerlaw};xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5))
-  if (data != floor(data))
-    println("Data should be discreate. Use round or floor function.")
+  if !all(data .== floor.(data))
+    println("Data should be discrete. Use round or floor function.") #! TODO replece with error
     return Union{}
   end
 
