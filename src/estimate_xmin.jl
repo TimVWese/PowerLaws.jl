@@ -21,8 +21,7 @@ end
 
 function _estimate_xmin(sorted_data::AbstractArray,bins_data::Dict{Float64,Int64},distribution::DataType,xmins::AbstractArray,xmax::Int64)
   if (length(xmins) == 0)
-    println("No xmins")
-    return Union{}
+    throw(ArgumentError("No xmins"))
   end
 
   min_dist = Inf
@@ -68,8 +67,7 @@ end
 
 function estimate_xmin(data::AbstractArray,distribution::Type{dis_powerlaw};xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5))
   if !all(data .== floor.(data))
-    println("Data should be discrete. Use round or floor function.") #! TODO replece with error
-    return Union{}
+    throw(ArgumentError("Data should be discreate. Use round or floor function."))
   end
 
   sorted_data,bins_data,xmins = init_xmins(data,xmins,xmax)
@@ -80,12 +78,11 @@ function estimate_xmin(data::AbstractArray,distribution::Type{dis_powerlaw};xmin
   _estimate_xmin(sorted_data,bins_data,distribution,xmins,xmax)
 end
 
-function estimate_xmin(data::AbstractArray,distribution::DataType;xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5))
+function estimate_xmin(data::AbstractArray,distribution::Type{<:UnivariateDistribution};xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5))
   min_dist = Inf
   best_fit = Union{}
-  if ((distribution <: DiscreteUnivariateDistribution)&&(data != floor(data)))
-    println("Data should be discreate. Use round or floor function.")
-    return Union{}
+  if ((distribution <: DiscreteUnivariateDistribution)&&(!all(data .!= floor(data))))
+    throw(ArgumentError("Data should be discreate. Use round or floor function."))
   end
 
   sorted_data,bins_data,xmins = init_xmins(data,xmins,xmax)
@@ -94,8 +91,7 @@ function estimate_xmin(data::AbstractArray,distribution::DataType;xmins::Abstrac
   end
 
   if (length(xmins) == 0)
-    println("No xmins")
-    return Union{}
+    throw(ArgumentError("No xmins"))
   end
 
   for xmin in xmins

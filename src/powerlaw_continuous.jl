@@ -3,7 +3,9 @@ struct con_powerlaw <: ContinuousUnivariateDistribution
     θ::Float64
 
     function con_powerlaw(α::Real, θ::Real)
-        @assert α > zero(α) && θ > zero(θ)
+        if !(α > zero(α) && θ > zero(θ))
+            throw(ArgumentError("Both shape and scale parameters must be positive."))
+        end
         new(α, θ)
     end
     con_powerlaw(α::Real) = con_powerlaw(α, 1.0)

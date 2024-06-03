@@ -130,7 +130,7 @@ cmpd = compare_distributions(dis_powerlaw,Poisson,data)
 @test isapprox(cmpd.C_p_val, 0.020978735677851468, atol=tolerance)
 @test cmpd.C_preff_distr == 1
 
-@test_throws AssertionError compare_distributions(dis_powerlaw,con_powerlaw,data)
+@test_throws ArgumentError compare_distributions(dis_powerlaw,con_powerlaw,data)
 @test_throws MethodError compare_distributions(d1,con_powerlaw,data)
 @test_throws MethodError compare_distributions(d1,con_powerlaw(),data)
 

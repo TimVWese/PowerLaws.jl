@@ -36,10 +36,6 @@ function compare_distributions(d1::con_powerlaw, d2::Type{<:ContinuousUnivariate
 end
 
 function compare_distributions(d1::dis_powerlaw, d2::Type{<:DiscreteUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
-    if !(d2 <: DiscreteUnivariateDistribution)
-        println("Both distributions should be discrete.")
-        return Union{}
-    end
     xmin = d1.θ
     data = sort(data)
     data = data[findfirst(x -> x >= xmin, data): end]
@@ -51,7 +47,7 @@ end
 function compare_distributions(d1::Type{<:UnivariateDistribution}, d2::Type{<:UnivariateDistribution}, data::AbstractArray, xmin::Number = 0; sig_level = 0.05)
     if !(((d1 <: ContinuousUnivariateDistribution) && (d2 <: ContinuousUnivariateDistribution)) ||
             ((d1 <: DiscreteUnivariateDistribution) && (d2 <: DiscreteUnivariateDistribution)))
-        @assert false "Both distributions should be either continuous or discrete."
+        throw(ArgumentError("Both distributions should be either continuous or discrete."))
     end
 
     if (xmin == 0)
