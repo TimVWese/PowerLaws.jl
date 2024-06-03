@@ -29,9 +29,9 @@ end
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
 
     est = estimate_xmin(moby_data, dis_powerlaw, xmins = [2,3,4,10,20])
-    @test isapprox(est[1].α, 1.9550379794745847, atol=tolerance) broken = true
+    @test est[1].α ≈ 1.95503797 broken = true
     @test est[1].θ == 10.0
-    @test isapprox(est[2], 0.011867106465087929, atol=tolerance) broken = true
+    @test est[2] ≈ 0.0118671064 broken = true
 end
 
 @testitem "Discrete bootstrap" begin

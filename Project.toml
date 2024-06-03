@@ -1,7 +1,7 @@
 name = "PowerLaws"
 uuid = "dddc953c-20d8-47dd-8cc1-765c34677cac"
 authors = ["Ján Brechtl", "Tim Van Wesemael <tim.vanwesemael@ugent.be>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
@@ -19,3 +19,6 @@ TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [targets]
 test = ["DelimitedFiles", "Test", "TestItemRunner", "TestItems"]
+
+[compat]
+julia="^1.8"
