@@ -1,4 +1,3 @@
-tests = ["test.jl"]
-for t in tests
-    include(t)
-end
+using TestItemRunner
+
+@run_package_tests verbose=true
