@@ -2,9 +2,9 @@
     using Distributions
 
     data = collect(1:100)
-    d1 = fit(dis_powerlaw,data)
+    d1 = fit(DiscretePowerLawDistribution,data)
 
-    @test_throws ArgumentError compare_distributions(dis_powerlaw,con_powerlaw,data)
-    @test_throws MethodError compare_distributions(d1,con_powerlaw,data)
-    @test_throws MethodError compare_distributions(d1,con_powerlaw(),data)
+    @test_throws ArgumentError DistributionComparison(DiscretePowerLawDistribution, ContinuousPowerLawDistribution, data)
+    @test_throws MethodError DistributionComparison(d1, ContinuousPowerLawDistribution, data)
+    @test_throws MethodError DistributionComparison(d1, ContinuousPowerLawDistribution(), data)
 end

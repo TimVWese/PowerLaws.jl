@@ -10,7 +10,7 @@ module PowerLaws
     logpdf, logcdf, entropy, @distr_support
   import Base: minimum, maximum, show
 
-  export con_powerlaw,dis_powerlaw,Kolmogorov_smirnov_test,estimate_xmin,bootstrap,bootstrap_p,compare_distributions
+  export ContinuousPowerLawDistribution,DiscretePowerLawDistribution,Kolmogorov_smirnov_test,estimate_xmin,bootstrap,bootstrap_p,DistributionComparison
 
   include("powerlaw_discrete.jl")
   include("powerlaw_continuous.jl")

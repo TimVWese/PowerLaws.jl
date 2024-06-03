@@ -1,4 +1,4 @@
-struct compare_distributions
+struct DistributionComparison
     data::AbstractArray
     log_likehoods_ratio::AbstractArray
     sig_level::Float64
@@ -11,7 +11,7 @@ struct compare_distributions
     C_preff_distr::Int64
 end
 
-function show(io::IO, x::compare_distributions)
+function show(io::IO, x::DistributionComparison)
     println(io, "Data:  $(x.data)")
     println(io, "Log likehood ratio: $(x.log_likehoods_ratio)")
     println(io, "Significance level: $(x.sig_level)")
@@ -26,7 +26,7 @@ end
 
 
 
-function compare_distributions(d1::con_powerlaw, d2::Type{<:ContinuousUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
+function DistributionComparison(d1::ContinuousPowerLawDistribution, d2::Type{<:ContinuousUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
     xmin = d1.θ
     data = sort(data)
     data = data[findfirst(x -> x >= xmin, data): end]
@@ -35,7 +35,7 @@ function compare_distributions(d1::con_powerlaw, d2::Type{<:ContinuousUnivariate
     _compare_distributions(d1,d2,data,xmin,sig_level)
 end
 
-function compare_distributions(d1::dis_powerlaw, d2::Type{<:DiscreteUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
+function DistributionComparison(d1::DiscretePowerLawDistribution, d2::Type{<:DiscreteUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
     xmin = d1.θ
     data = sort(data)
     data = data[findfirst(x -> x >= xmin, data): end]
@@ -44,7 +44,7 @@ function compare_distributions(d1::dis_powerlaw, d2::Type{<:DiscreteUnivariateDi
     _compare_distributions(d1,d2,data,xmin,sig_level)
 end
 
-function compare_distributions(d1::Type{<:UnivariateDistribution}, d2::Type{<:UnivariateDistribution}, data::AbstractArray, xmin::Number = 0; sig_level = 0.05)
+function DistributionComparison(d1::Type{<:UnivariateDistribution}, d2::Type{<:UnivariateDistribution}, data::AbstractArray, xmin::Number = 0; sig_level = 0.05)
     if !(((d1 <: ContinuousUnivariateDistribution) && (d2 <: ContinuousUnivariateDistribution)) ||
             ((d1 <: DiscreteUnivariateDistribution) && (d2 <: DiscreteUnivariateDistribution)))
         throw(ArgumentError("Both distributions should be either continuous or discrete."))
@@ -63,11 +63,11 @@ function compare_distributions(d1::Type{<:UnivariateDistribution}, d2::Type{<:Un
     _compare_distributions(d1,d2,data,xmin,sig_level)
 end
 
-function compare_distributions(d1::DiscreteUnivariateDistribution, d2::DiscreteUnivariateDistribution, data::AbstractArray, xmin::Number = 1; sig_level = 0.05)
+function DistributionComparison(d1::DiscreteUnivariateDistribution, d2::DiscreteUnivariateDistribution, data::AbstractArray, xmin::Number = 1; sig_level = 0.05)
    _compare_distributions(d1,d2,data,xmin,sig_level) 
 end
 
-function compare_distributions(d1::ContinuousUnivariateDistribution, d2::ContinuousUnivariateDistribution, data::AbstractArray, xmin::Number = 0; sig_level = 0.05)
+function DistributionComparison(d1::ContinuousUnivariateDistribution, d2::ContinuousUnivariateDistribution, data::AbstractArray, xmin::Number = 0; sig_level = 0.05)
    _compare_distributions(d1,d2,data,xmin,sig_level) 
 end
 
@@ -100,5 +100,5 @@ function _compare_distributions(d1::UnivariateDistribution, d2::UnivariateDistri
         if (pval <= sig_level) preff_distr = 2 end
     end
 
-    return compare_distributions(data,log_likehoods_ratio,sig_level,xmin,test_stat,v_p_val,v_preff_distr,b,pval,preff_distr)
+    return DistributionComparison(data,log_likehoods_ratio,sig_level,xmin,test_stat,v_p_val,v_preff_distr,b,pval,preff_distr)
 end
