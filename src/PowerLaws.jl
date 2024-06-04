@@ -14,8 +14,8 @@ module PowerLaws
 
   include("powerlaw_discrete.jl")
   include("powerlaw_continuous.jl")
-  include("estimate_xmin.jl")
-  include("Kolmogorov-smirnov_test.jl")
+  include("estimate_parameters.jl")
+  include("kolmogorov_smirnov_test.jl")
   include("bootstrap.jl")
   include("compare_distributions.jl")
 
