@@ -26,7 +26,7 @@ end
 
 
 
-function DistributionComparison(d1::ContinuousPowerLawDistribution, d2::Type{<:ContinuousUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
+function DistributionComparison(d1::ContinuousPowerLaw, d2::Type{<:ContinuousUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
     xmin = d1.θ
     data = sort(data)
     data = data[findfirst(x -> x >= xmin, data): end]
@@ -35,7 +35,7 @@ function DistributionComparison(d1::ContinuousPowerLawDistribution, d2::Type{<:C
     _compare_distributions(d1,d2,data,xmin,sig_level)
 end
 
-function DistributionComparison(d1::DiscretePowerLawDistribution, d2::Type{<:DiscreteUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
+function DistributionComparison(d1::DiscretePowerLaw, d2::Type{<:DiscreteUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
     xmin = d1.θ
     data = sort(data)
     data = data[findfirst(x -> x >= xmin, data): end]

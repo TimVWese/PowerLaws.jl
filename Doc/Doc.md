@@ -5,10 +5,10 @@ Documentation
 
 This definitions are done according to [Distributions](http://distributionsjl.readthedocs.org/en/latest/) package template. Continuous powerlaw support all function like cdf,ccdf,pdf,median,var etc. Discrete powerlaw do not have implemented moments - median,variance etc.
 
-#### (alfa,xmin)
+#### ContinuousPowerLaw(alfa,xmin)
 Continuios power law with probability density function ![equation](http://www.sciweavers.org/tex2img.php?eq=p%28x%29%20%3D%5Cbegin%7Bcases%7D%20%5Cfrac%7B%28%5Calpha%20%20-%201%29%7D%7B%5Ctheta%7D%20%2A%20%28%5Cfrac%7Bx%7D%7B%5Ctheta%7D%29%5E%7B-%5Calpha%7D%20%20%20%26%20x%20%20%5Cgeq%20%20%5Ctheta%20%5C%5C0%20%26%20x%20%20%3C%20%5Ctheta%20%5Cend%7Bcases%7D%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0%22%20align=%22center%22%20border=%220%22%20alt=%22p(x)%20=\begin{cases}%20\frac{(\alpha%20%20-%201)}{\theta}%20*%20(\frac{x}{\theta})^{-\alpha}%20%20%20&%20x%20%20\geq%20%20\theta%20\\0%20&%20x%20%20%3C%20\theta%20\end{cases}%20%22%20width=%22244%22%20height=%2250%22)
 
-#### DiscretePowerLawDistribution(alfa,xmin)
+#### DiscretePowerLaw(alfa,xmin)
 Discrete power law with probability mass function ![equation](http://www.sciweavers.org/tex2img.php?eq=p%28x%29%20%3D%5Cbegin%7Bcases%7D%20%5Cfrac%7Bx%5E%7B-%5Calpha%7D%7D%7Bzeta%28%20%5Calpha%20%2C%20%5Ctheta%20%29%7D%20%20%20%26%20x%20%20%5Cgeq%20%20%5Ctheta%20%5C%5C0%20%26%20x%20%20%3C%20%5Ctheta%20%5Cend%7Bcases%7D%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0%22%20align=%22center%22%20border=%220%22%20alt=%22p(x)%20=\begin{cases}%20\frac{x^{-\alpha}}{zeta(%20\alpha%20,%20\theta%20)}%20%20%20&%20x%20%20\geq%20%20\theta%20\\0%20&%20x%20%20%3C%20\theta%20\end{cases}%20%22%20width=%22201%22%20height=%2254%22)
 
 #### immutable DistributionComparison (data::AbstractArray, log_likehoods_ratio::AbstractArray, sig_level::Float64, xmin::Number, V_test_stat::Float64, V_p_val::Float64, V_preff_distr::Int64, C_b::Int64, C_p_val::Float64, C_preff_distr::Int64,)
@@ -31,14 +31,14 @@ Data type for distribution comparison.
 ### Functions
 
 #### estimate_xmin(data::AbstractArray,distribution::Type{},xmins::AbstractArray = [],xmax::Int64 = int(1e5))
-#### estimate_xmin(data::AbstractArray,distribution::Type{DiscretePowerLawDistribution},xmins::AbstractArray = [],xmax::Int64 = int(1e5))
+#### estimate_xmin(data::AbstractArray,distribution::Type{DiscretePowerLaw},xmins::AbstractArray = [],xmax::Int64 = int(1e5))
 
 Estimates best xmin and alfa for data set with respect to the [Kolmogorov smirnov test](https://www.encyclopediaofmath.org/index.php/Kolmogorov-Smirnov_test)
 
 **Parameters:**
 
 * data: array of data which should be fit to distribution
-* distribution: this parameter sets distribution Type at this time only DiscretePowerLawDistribution,
+* distribution: this parameter sets distribution Type at this time only DiscretePowerLaw,
 * xmins: if not specified all unique values in data are taken as possible xmins, if specified then only values in array xmins are considered when finding best xmin
 * xmax: maximum value considered in calculations,values above xmax are not considered in for example calculating Kolmogorov smirnov test.
 
@@ -48,20 +48,20 @@ return powerlaw distribution (continuos or discrete) with best xmin and alfa and
 
 ````jl
     estimate_xmin(collect(1:100),)
-    estimate_xmin(collect(1:100),DiscretePowerLawDistribution)
+    estimate_xmin(collect(1:100),DiscretePowerLaw)
     estimate_xmin(collect(1:100),,xmins = [1,2,3,4,50,90])
 
 ````
     
 #### Kolmogorov_smirnov_test(dat::AbstractArray,d::,xmax::Int64 = int(1e5))
-#### Kolmogorov_smirnov_test(dat::AbstractArray,d::DiscretePowerLawDistribution,xmax::Int64 = int(1e5))
+#### Kolmogorov_smirnov_test(dat::AbstractArray,d::DiscretePowerLaw,xmax::Int64 = int(1e5))
 
 Calculate [Kolmogorov smirnov test](https://www.encyclopediaofmath.org/index.php/Kolmogorov-Smirnov_test) on given data and distribution.
 
 **Parameters:**
 
 * data: array of data which should be fit to distribution
-* d: distribution, right now it support only  and DiscretePowerLawDistribution
+* d: distribution, right now it support only  and DiscretePowerLaw
 * xmax: maximum value considered in calculations,values above xmax are not considered.
 
 return KS_statistic
@@ -78,7 +78,7 @@ To quantify the uncertainty in our estimate for xmin you can use bootstrap metho
 **Parameters:**
 
 * data: array of data which should be fit to distribution
-* d: distribution, right now it support only  and DiscretePowerLawDistribution
+* d: distribution, right now it support only  and DiscretePowerLaw
 * no_of_sims: number of simulations which should be performed
 * xmins: if not specified all unique values in data are taken as possible xmins, if specified then only values in array xmins are considered when finding best xmin
 * xmax: maximum value considered in calculations,values above xmax are not considered.
@@ -87,13 +87,13 @@ To quantify the uncertainty in our estimate for xmin you can use bootstrap metho
 return array of simulated power law distributions with Kolmogorov smirnov test
 
 #### bootstrap(data::AbstractArray,distribution::Type{};no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLawDistribution). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap.
+Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap.
 
 #### bootstrap(data::AbstractArray,d::UnivariateDistribution, processes::Int64;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
 This is parallel version of bootstrap with additional parameter processes. This is number of processes which should be spawned to calculate the bootstrap. Note that this function is using [pmap](http://docs.julialang.org/en/latest/manual/parallel-computing/) which means that if there are existing workers spawned they will be used. When using this function one should consider time which is needed for data to be copied to all processes which means that it make sense to use this function only if estimate_xmin takes long time(more than few second).
 
 #### bootstrap(data::AbstractArray,distribution::Type{},processes::Int64;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)  
-Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLawDistribution). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap.
+Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap.
 
 **Examples**
 
@@ -102,13 +102,13 @@ Almost same as function above only difference is distribution parameter where sh
     bootstrap([1:100],f[1],no_of_sims = 100)
     bootstrap(collect(1:100),f[1],3,no_of_sims = 100)
 
-    f = estimate_xmin([1:100],DiscretePowerLawDistribution)
+    f = estimate_xmin([1:100],DiscretePowerLaw)
     bootstrap([1:100],f[1],no_of_sims = 100)
     bootstrap(collect(1:100),f[1],3,no_of_sims = 100)
 
 
     bootstrap(collect(1:100),,3,no_of_sims = 100)
-    bootstrap(collect(1:100),DiscretePowerLawDistribution,no_of_sims = 100)
+    bootstrap(collect(1:100),DiscretePowerLaw,no_of_sims = 100)
 ````
 
 #### bootstrap_p(data::AbstractArray,d::UnivariateDistribution;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
@@ -117,7 +117,7 @@ Performs a bootstrapping hypothesis test to determine whether a power law distri
 **Parameters:**
 
 * data: array of data which should be fit to distribution
-* d: distribution, right now it support only  and DiscretePowerLawDistribution
+* d: distribution, right now it support only  and DiscretePowerLaw
 * no_of_sims: number of simulations which should be performed
 * xmins: if not specified all unique values in data are taken as possible xmins, if specified then only values in array xmins are considered when finding best xmin
 * xmax: maximum value considered in calculations,values above xmax are not considered.
@@ -126,21 +126,21 @@ Performs a bootstrapping hypothesis test to determine whether a power law distri
 return array of simulated power law distributions with Kolmogorov smirnov test and p_value
 
 #### bootstrap_p(data::AbstractArray,distribution::Type{};no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLawDistribution). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap_p.
+Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap_p.
 
 #### bootstrap_p(data::AbstractArray,d::UnivariateDistribution, processes::Int64;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
 This is parallel version of bootstrap_p with additional parameter processes. This is number of processes which should be spawned to calculate the bootstrap. Note that this function is using [pmap](http://docs.julialang.org/en/latest/manual/parallel-computing/) which means that if there are existing workers spawned they will be used. When using this function one should consider time which is needed for data to be copied to all processes which means that it make sense to use this function only if estimate_xmin takes long time(more than few second).
 
 #### function bootstrap_p(data::AbstractArray,distribution::Type{},processes::Int64;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)  
-Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLawDistribution). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap_p.
+Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap_p.
 
 **Examples**
 
 ````jl
-    f = estimate_xmin([1:100],DiscretePowerLawDistribution)
+    f = estimate_xmin([1:100],DiscretePowerLaw)
     bootstrap_p(collect(1:100),f[1],3,no_of_sims = 100)
     bootstrap_p(collect(1:100),f[1],no_of_sims = 100)
-    bootstrap_p(collect(1:100),DiscretePowerLawDistribution,no_of_sims = 100)
+    bootstrap_p(collect(1:100),DiscretePowerLaw,no_of_sims = 100)
     bootstrap_p(collect(1:100),,no_of_sims = 100)
 ````
 
@@ -173,7 +173,7 @@ Almost same as above functions but arguments d1 and d2 are types of distribution
 return data type compare_distibutions with results - see type definitions in doc.
 
 #### function DistributionComparison(d1::, d2::DataType, data::AbstractArray; sig_level = 0.05)
-#### function DistributionComparison(d1::DiscretePowerLawDistribution, d2::DataType, data::AbstractArray; sig_level = 0.05)
+#### function DistributionComparison(d1::DiscretePowerLaw, d2::DataType, data::AbstractArray; sig_level = 0.05)
 Almost same as above functions but argument d1 is discrete or continuous power law distribution and d2 are types of distributions which which should be compared and is fit according to xmin and data.  
 
 **Parameters:**
@@ -185,4 +185,4 @@ Almost same as above functions but argument d1 is discrete or continuous power l
 
 return data type compare_distibutions with results - see type definitions in doc.
 
-**Note:** distribution::Type{} means that inside curly brackets is type e.g. ,DiscretePowerLawDistribution
+**Note:** distribution::Type{} means that inside curly brackets is type e.g. ,DiscretePowerLaw

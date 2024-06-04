@@ -58,14 +58,14 @@ function _estimate_xmin(sorted_data::AbstractArray,bins_data::Dict{Float64,Int64
   return best_fit,min_dist
 end
 
-function estimate_xmin(data::AbstractArray,distribution::Type{ContinuousPowerLawDistribution};xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5))
+function estimate_xmin(data::AbstractArray,distribution::Type{ContinuousPowerLaw};xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5))
 
   sorted_data,bins_data,xmins = init_xmins(data,xmins,xmax)
 
   _estimate_xmin(sorted_data,bins_data,distribution,xmins,xmax)
 end
 
-function estimate_xmin(data::AbstractArray,distribution::Type{DiscretePowerLawDistribution};xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5))
+function estimate_xmin(data::AbstractArray,distribution::Type{DiscretePowerLaw};xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5))
   if !all(data .== floor.(data))
     throw(ArgumentError("Data should be discreate. Use round or floor function."))
   end
