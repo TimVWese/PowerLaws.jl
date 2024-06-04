@@ -1,4 +1,4 @@
-function Kolmogorov_smirnov_test(dat::AbstractArray,d::ContinuousUnivariateDistribution,xmin::Number,xmax::Int64 = round(Int,1e5))
+function kolmogorov_smirnov_test(dat::AbstractArray,d::ContinuousUnivariateDistribution,xmin::Number,xmax::Int64 = round(Int,1e5))
   data = sort(dat)
   n = float(length(data))
   max_indx = findlast(x -> x <= xmax, data)
@@ -11,7 +11,7 @@ function Kolmogorov_smirnov_test(dat::AbstractArray,d::ContinuousUnivariateDistr
   return D
 end
 
-function Kolmogorov_smirnov_test(dat::AbstractArray,d::DiscreteUnivariateDistribution,xmin::Int64,xmax::Int64 = round(Int,1e5))
+function kolmogorov_smirnov_test(dat::AbstractArray,d::DiscreteUnivariateDistribution,xmin::Int64,xmax::Int64 = round(Int,1e5))
   alpha, xmin = params(d)
   data = Int64.(round.(sort(dat)))
   n = float(length(data))

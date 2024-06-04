@@ -5,17 +5,17 @@
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
     population = vec(readdlm(joinpath(data_dir, "population.txt"), ' ', '\n'))
 
-    est = estimate_xmin(moby_data, ContinuousPowerLaw)
+    est = estimate_parameters(moby_data, ContinuousPowerLaw)
     @test est[1].α ≈ 1.93352404
     @test est[1].θ == 26.0
     @test est[2] ≈ 0.0320477608
 
-    est = estimate_xmin(collect(1:100), ContinuousPowerLaw)
+    est = estimate_parameters(collect(1:100), ContinuousPowerLaw)
     @test est[1].α ≈ 9.17882479
     @test est[1].θ == 79.0
     @test est[2] ≈ 0.182433050
 
-    est1 = estimate_xmin(population, ContinuousPowerLaw)
+    est1 = estimate_parameters(population, ContinuousPowerLaw)
     @test est1[1].α ≈ 2.03370715
     @test est1[1].θ == 96479.0
     @test est1[2] ≈ 0.0
@@ -27,7 +27,7 @@ end
     data_dir = joinpath(dirname(pathof(PowerLaws)), "..", "data")
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
 
-    est = estimate_xmin(moby_data, ContinuousPowerLaw, xmins = [2,3,4,10,20])
+    est = estimate_parameters(moby_data, ContinuousPowerLaw, xmins = [2,3,4,10,20])
     @test est[1].α ≈ 1.951428245
     @test est[1].θ == 20.0
     @test est[2] ≈ 0.0441609421
@@ -42,7 +42,7 @@ end
     bootstr = bootstrap(moby_data, ContinuousPowerLaw, no_of_sims = 15)
     @test length(bootstr) == 15
 
-    est = estimate_xmin(moby_data, ContinuousPowerLaw)
+    est = estimate_parameters(moby_data, ContinuousPowerLaw)
     bootstr = bootstrap(moby_data, est[1], no_of_sims = 12)
     @test length(bootstr) == 12
 end
@@ -54,7 +54,7 @@ end
     data_dir = joinpath(dirname(pathof(PowerLaws)), "..", "data")
     moby_data = sort(vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int)))
 
-    d1 = estimate_xmin(moby_data, ContinuousPowerLaw)[1]
+    d1 = estimate_parameters(moby_data, ContinuousPowerLaw)[1]
     d2 = fit(Exponential, moby_data[18072:end])
     cmpd = DistributionComparison(d1,d2,moby_data,26)
     @test cmpd.xmin == 26

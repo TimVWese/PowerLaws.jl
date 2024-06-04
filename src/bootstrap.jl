@@ -6,18 +6,18 @@ function bootstrap(data::AbstractArray,d::UnivariateDistribution;no_of_sims::Int
 #  statistic = Array(Tuple{typeof(d),Float64},no_of_sims)
   for i=1:no_of_sims
     sim_data = sample(data, n, replace=true)
-    statistic[i] =estimate_xmin(sim_data,typeof(d),xmins = xmins,xmax = xmax)
+    statistic[i] =estimate_parameters(sim_data,typeof(d),xmins = xmins,xmax = xmax)
   end
   return statistic
 end
 
 function bootstrap(data::AbstractArray,distribution::Type{ContinuousPowerLaw};no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-  d,ks = estimate_xmin(data,distribution,xmins = xmins,xmax =xmax)
+  d,ks = estimate_parameters(data,distribution,xmins = xmins,xmax =xmax)
   bootstrap(data,d,no_of_sims = no_of_sims,xmins = xmins,xmax = xmax,seed =seed)
 end
 
 function bootstrap(data::AbstractArray,distribution::Type{DiscretePowerLaw};no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-  d,ks = estimate_xmin(data,distribution,xmins = xmins,xmax =xmax)
+  d,ks = estimate_parameters(data,distribution,xmins = xmins,xmax =xmax)
   bootstrap(data,d,no_of_sims = no_of_sims,xmins = xmins,xmax = xmax,seed =seed)
 end
 
@@ -27,7 +27,7 @@ function bootstrap_p(data::AbstractArray,d::UnivariateDistribution;no_of_sims::I
   n = length(sort_data)
   tail_indx = findfirst(sort_data,θ)
   tail_p = length(sort_data[tail_indx:end])/n
-  KS_stat = Kolmogorov_smirnov_test(sort_data[tail_indx:end],d)
+  KS_stat = kolmogorov_smirnov_test(sort_data[tail_indx:end],d)
 
   P = 0
   statistic = Array(Tuple{typeof(d),Float64},no_of_sims)
@@ -37,7 +37,7 @@ function bootstrap_p(data::AbstractArray,d::UnivariateDistribution;no_of_sims::I
     n2 = n - n1
     sim_data = sample(sort_data[1:tail_indx-1],n1,replace = true)
     append!(sim_data,rand(d,n2))
-    statistic[i] = estimate_xmin(sim_data,typeof(d),xmins = xmins,xmax = xmax)
+    statistic[i] = estimate_parameters(sim_data,typeof(d),xmins = xmins,xmax = xmax)
     if (KS_stat <= statistic[i][2])
       P +=1
     end
@@ -46,11 +46,11 @@ function bootstrap_p(data::AbstractArray,d::UnivariateDistribution;no_of_sims::I
 end
 
 function bootstrap_p(data::AbstractArray,distribution::Type{ContinuousPowerLaw};no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-  d,ks = estimate_xmin(data,distribution,xmins = xmins,xmax =xmax)
+  d,ks = estimate_parameters(data,distribution,xmins = xmins,xmax =xmax)
   bootstrap_p(data,d,no_of_sims = no_of_sims,xmins = xmins,xmax = xmax,seed =seed)
 end
 
 function bootstrap_p(data::AbstractArray,distribution::Type{DiscretePowerLaw};no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-  d,ks = estimate_xmin(data,distribution,xmins = xmins,xmax =xmax)
+  d,ks = estimate_parameters(data,distribution,xmins = xmins,xmax =xmax)
   bootstrap_p(data,d,no_of_sims = no_of_sims,xmins = xmins,xmax = xmax,seed =seed)
 end

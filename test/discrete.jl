@@ -13,12 +13,12 @@ population = vec(readdlm(pkg_path(["data", "population.txt"]), ' ', '\n'))
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
     cities = vec(readdlm(joinpath(data_dir, "cities.txt"), Int))
 
-    est = estimate_xmin(moby_data, DiscretePowerLaw)
+    est = estimate_parameters(moby_data, DiscretePowerLaw)
     @test est[1].α ≈ 1.95015723
     @test est[1].θ == 7.0
     @test est[2] ≈ 0.00922886388
 
-    est1 = estimate_xmin(cities, DiscretePowerLaw)
+    est1 = estimate_parameters(cities, DiscretePowerLaw)
     @test est1[1].α ≈ 1.61439261
     @test est1[1].θ == 1021.0
     @test est1[2] ≈ 0.0608858393
@@ -30,7 +30,7 @@ end
     data_dir = joinpath(dirname(pathof(PowerLaws)), "..", "data")
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
 
-    est = estimate_xmin(moby_data, DiscretePowerLaw, xmins = [2,3,4,10,20])
+    est = estimate_parameters(moby_data, DiscretePowerLaw, xmins = [2,3,4,10,20])
     @test est[1].α ≈ 1.95381938
     @test est[1].θ == 10.0
     @test est[2] ≈ 0.0122405536
@@ -43,7 +43,7 @@ end
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
     electrical_blackout = vec(readdlm(joinpath(data_dir, "electrical_blackouts_US.txt"), Int))
 
-    est = estimate_xmin(electrical_blackout, DiscretePowerLaw)
+    est = estimate_parameters(electrical_blackout, DiscretePowerLaw)
     @test est[1].α ≈ 1.22015235
     @test est[1].θ == 1000.0
     @test est[2] ≈ 0.362783061
@@ -128,7 +128,7 @@ end
     data_dir = joinpath(dirname(pathof(PowerLaws)), "..", "data")
     moby_data = sort(vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int)))
 
-    d1 = estimate_xmin(moby_data, DiscretePowerLaw)[1]
+    d1 = estimate_parameters(moby_data, DiscretePowerLaw)[1]
     d2 = fit(Poisson,moby_data[15898:end])
     cmpd = DistributionComparison(d1,d2,moby_data,7.0)
     @test cmpd.xmin == 7.0

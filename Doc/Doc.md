@@ -30,8 +30,8 @@ Data type for distribution comparison.
 
 ### Functions
 
-#### estimate_xmin(data::AbstractArray,distribution::Type{},xmins::AbstractArray = [],xmax::Int64 = int(1e5))
-#### estimate_xmin(data::AbstractArray,distribution::Type{DiscretePowerLaw},xmins::AbstractArray = [],xmax::Int64 = int(1e5))
+#### estimate_parameters(data::AbstractArray,distribution::Type{},xmins::AbstractArray = [],xmax::Int64 = int(1e5))
+#### estimate_parameters(data::AbstractArray,distribution::Type{DiscretePowerLaw},xmins::AbstractArray = [],xmax::Int64 = int(1e5))
 
 Estimates best xmin and alfa for data set with respect to the [Kolmogorov smirnov test](https://www.encyclopediaofmath.org/index.php/Kolmogorov-Smirnov_test)
 
@@ -47,14 +47,14 @@ return powerlaw distribution (continuos or discrete) with best xmin and alfa and
 **Examples**
 
 ````jl
-    estimate_xmin(collect(1:100),)
-    estimate_xmin(collect(1:100),DiscretePowerLaw)
-    estimate_xmin(collect(1:100),,xmins = [1,2,3,4,50,90])
+    estimate_parameters(collect(1:100),)
+    estimate_parameters(collect(1:100),DiscretePowerLaw)
+    estimate_parameters(collect(1:100),,xmins = [1,2,3,4,50,90])
 
 ````
     
-#### Kolmogorov_smirnov_test(dat::AbstractArray,d::,xmax::Int64 = int(1e5))
-#### Kolmogorov_smirnov_test(dat::AbstractArray,d::DiscretePowerLaw,xmax::Int64 = int(1e5))
+#### kolmogorov_smirnov_test(dat::AbstractArray,d::,xmax::Int64 = int(1e5))
+#### kolmogorov_smirnov_test(dat::AbstractArray,d::DiscretePowerLaw,xmax::Int64 = int(1e5))
 
 Calculate [Kolmogorov smirnov test](https://www.encyclopediaofmath.org/index.php/Kolmogorov-Smirnov_test) on given data and distribution.
 
@@ -69,7 +69,7 @@ return KS_statistic
 **Examples**
 
 ````jl
-    Kolmogorov_smirnov_test([1:100],(2,2))
+    kolmogorov_smirnov_test([1:100],(2,2))
 ````
 
 #### bootstrap(data::AbstractArray,d::UnivariateDistribution;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
@@ -87,22 +87,22 @@ To quantify the uncertainty in our estimate for xmin you can use bootstrap metho
 return array of simulated power law distributions with Kolmogorov smirnov test
 
 #### bootstrap(data::AbstractArray,distribution::Type{};no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap.
+Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_parameters on data with parameter distrete and than perform bootstrap.
 
 #### bootstrap(data::AbstractArray,d::UnivariateDistribution, processes::Int64;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-This is parallel version of bootstrap with additional parameter processes. This is number of processes which should be spawned to calculate the bootstrap. Note that this function is using [pmap](http://docs.julialang.org/en/latest/manual/parallel-computing/) which means that if there are existing workers spawned they will be used. When using this function one should consider time which is needed for data to be copied to all processes which means that it make sense to use this function only if estimate_xmin takes long time(more than few second).
+This is parallel version of bootstrap with additional parameter processes. This is number of processes which should be spawned to calculate the bootstrap. Note that this function is using [pmap](http://docs.julialang.org/en/latest/manual/parallel-computing/) which means that if there are existing workers spawned they will be used. When using this function one should consider time which is needed for data to be copied to all processes which means that it make sense to use this function only if estimate_parameters takes long time(more than few second).
 
 #### bootstrap(data::AbstractArray,distribution::Type{},processes::Int64;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)  
-Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap.
+Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_parameters on data with parameter distrete and than perform bootstrap.
 
 **Examples**
 
 ````jl
-    f = estimate_xmin([1:100],)
+    f = estimate_parameters([1:100],)
     bootstrap([1:100],f[1],no_of_sims = 100)
     bootstrap(collect(1:100),f[1],3,no_of_sims = 100)
 
-    f = estimate_xmin([1:100],DiscretePowerLaw)
+    f = estimate_parameters([1:100],DiscretePowerLaw)
     bootstrap([1:100],f[1],no_of_sims = 100)
     bootstrap(collect(1:100),f[1],3,no_of_sims = 100)
 
@@ -126,18 +126,18 @@ Performs a bootstrapping hypothesis test to determine whether a power law distri
 return array of simulated power law distributions with Kolmogorov smirnov test and p_value
 
 #### bootstrap_p(data::AbstractArray,distribution::Type{};no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap_p.
+Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_parameters on data with parameter distrete and than perform bootstrap_p.
 
 #### bootstrap_p(data::AbstractArray,d::UnivariateDistribution, processes::Int64;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
-This is parallel version of bootstrap_p with additional parameter processes. This is number of processes which should be spawned to calculate the bootstrap. Note that this function is using [pmap](http://docs.julialang.org/en/latest/manual/parallel-computing/) which means that if there are existing workers spawned they will be used. When using this function one should consider time which is needed for data to be copied to all processes which means that it make sense to use this function only if estimate_xmin takes long time(more than few second).
+This is parallel version of bootstrap_p with additional parameter processes. This is number of processes which should be spawned to calculate the bootstrap. Note that this function is using [pmap](http://docs.julialang.org/en/latest/manual/parallel-computing/) which means that if there are existing workers spawned they will be used. When using this function one should consider time which is needed for data to be copied to all processes which means that it make sense to use this function only if estimate_parameters takes long time(more than few second).
 
 #### function bootstrap_p(data::AbstractArray,distribution::Type{},processes::Int64;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)  
-Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_xmin on data with parameter distrete and than perform bootstrap_p.
+Almost same as function above only difference is distribution parameter where should by type of distibution ( / DiscretePowerLaw). This function calls estimate_parameters on data with parameter distrete and than perform bootstrap_p.
 
 **Examples**
 
 ````jl
-    f = estimate_xmin([1:100],DiscretePowerLaw)
+    f = estimate_parameters([1:100],DiscretePowerLaw)
     bootstrap_p(collect(1:100),f[1],3,no_of_sims = 100)
     bootstrap_p(collect(1:100),f[1],no_of_sims = 100)
     bootstrap_p(collect(1:100),DiscretePowerLaw,no_of_sims = 100)
