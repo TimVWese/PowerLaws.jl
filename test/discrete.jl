@@ -1,3 +1,5 @@
+# Numeric values have been obtained through the use of the `powerlaw` package in Python.
+
 pkg_path = paths -> joinpath(dirname(pathof(PowerLaws)), "..", paths...)
 
 cities = vec(readdlm(pkg_path(["data", "cities.txt"]), ' ', Int))
@@ -12,14 +14,14 @@ population = vec(readdlm(pkg_path(["data", "population.txt"]), ' ', '\n'))
     cities = vec(readdlm(joinpath(data_dir, "cities.txt"), Int))
 
     est = estimate_xmin(moby_data, DiscretePowerLaw)
-    @test est[1].α ≈ 1.95272751 broken = true
+    @test est[1].α ≈ 1.95015723
     @test est[1].θ == 7.0
-    @test est[2] ≈ 0.00825295045 broken = true
+    @test est[2] ≈ 0.00922886388
 
     est1 = estimate_xmin(cities, DiscretePowerLaw)
-    @test est1[1].α ≈ 1.61439264 broken = true
+    @test est1[1].α ≈ 1.61439261
     @test est1[1].θ == 1021.0
-    @test est1[2] ≈ 0.0608858298 broken = true
+    @test est1[2] ≈ 0.0608858393
 end
 
 @testitem "Discrete x_min from options" begin
@@ -29,9 +31,9 @@ end
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
 
     est = estimate_xmin(moby_data, DiscretePowerLaw, xmins = [2,3,4,10,20])
-    @test est[1].α ≈ 1.95503797 broken = true
+    @test est[1].α ≈ 1.95381938
     @test est[1].θ == 10.0
-    @test est[2] ≈ 0.0118671064 broken = true
+    @test est[2] ≈ 0.0122405536
 end
 
 @testitem "Discrete bootstrap" begin
@@ -131,7 +133,7 @@ end
     cmpd = DistributionComparison(d1,d2,moby_data,7.0)
     @test cmpd.xmin == 7.0
     @test cmpd.sig_level == 0.05
-    @test cmpd.V_test_stat ≈ 4.44848637 broken = true
+    @test cmpd.V_test_stat ≈ 4.448483568
     @test cmpd.V_p_val ≈ 0.999995676
     @test cmpd.V_preff_distr == 1
     @test cmpd.C_b == 2757
