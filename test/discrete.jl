@@ -30,7 +30,7 @@ end
     data_dir = joinpath(dirname(pathof(PowerLaws)), "..", "data")
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
 
-    est = estimate_parameters(moby_data, DiscretePowerLaw, xmins = [2,3,4,10,20])
+    est = estimate_parameters(moby_data, DiscretePowerLaw, xmins=[2, 3, 4, 10, 20])
     @test est[1].α ≈ 1.95381938
     @test est[1].θ == 10.0
     @test est[2] ≈ 0.0122405536
@@ -48,10 +48,10 @@ end
     @test est[1].θ == 1000.0
     @test est[2] ≈ 0.362783061
 
-    bootstr = bootstrap(moby_data,DiscretePowerLaw,no_of_sims = 15)
+    bootstr = bootstrap(moby_data, DiscretePowerLaw, no_of_sims=15)
     @test length(bootstr) == 15
 
-    bootstr = bootstrap(electrical_blackout,est[1],no_of_sims = 12)
+    bootstr = bootstrap(electrical_blackout, est[1], no_of_sims=12)
     @test length(bootstr) == 12
 end
 
@@ -59,11 +59,11 @@ end
     using Distributions
 
     data = collect(1:100)
-    d1 = fit(DiscretePowerLaw,data)
-    d2 = fit(Poisson,data)
+    d1 = fit(DiscretePowerLaw, data)
+    d2 = fit(Poisson, data)
     f_lpdf = (distribution, data) -> map(Base.Fix1(logpdf, distribution), data)
-    ll_hoods_r = f_lpdf(d1,data) - f_lpdf(d2,data)
-    cmpd = DistributionComparison(d1,d2,data)
+    ll_hoods_r = f_lpdf(d1, data) - f_lpdf(d2, data)
+    cmpd = DistributionComparison(d1, d2, data)
     @test typeof(cmpd) == DistributionComparison
     @test cmpd.data == data
     @test cmpd.log_likelihood_ratio == ll_hoods_r
@@ -81,11 +81,11 @@ end
     using Distributions
 
     data = collect(1:100)
-    d1 = fit(DiscretePowerLaw,data)
-    d2 = fit(Poisson,data)
+    d1 = fit(DiscretePowerLaw, data)
+    d2 = fit(Poisson, data)
     f_lpdf = (distribution, data) -> map(Base.Fix1(logpdf, distribution), data)
-    ll_hoods_r = f_lpdf(d1,data) - f_lpdf(d2,data)
-    cmpd = DistributionComparison(d1,Poisson,data)
+    ll_hoods_r = f_lpdf(d1, data) - f_lpdf(d2, data)
+    cmpd = DistributionComparison(d1, Poisson, data)
     @test typeof(cmpd) == DistributionComparison
     @test cmpd.data == data
     @test cmpd.log_likelihood_ratio == ll_hoods_r
@@ -103,11 +103,11 @@ end
     using Distributions
 
     data = collect(1:100)
-    d1 = fit(DiscretePowerLaw,data)
-    d2 = fit(Poisson,data)
+    d1 = fit(DiscretePowerLaw, data)
+    d2 = fit(Poisson, data)
     f_lpdf = (distribution, data) -> map(Base.Fix1(logpdf, distribution), data)
-    ll_hoods_r = f_lpdf(d1,data) - f_lpdf(d2,data)
-    cmpd = DistributionComparison(DiscretePowerLaw,Poisson,data)
+    ll_hoods_r = f_lpdf(d1, data) - f_lpdf(d2, data)
+    cmpd = DistributionComparison(DiscretePowerLaw, Poisson, data)
     @test typeof(cmpd) == DistributionComparison
     @test cmpd.data == data
     @test cmpd.log_likelihood_ratio == ll_hoods_r
@@ -129,8 +129,8 @@ end
     moby_data = sort(vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int)))
 
     d1 = estimate_parameters(moby_data, DiscretePowerLaw)[1]
-    d2 = fit(Poisson,moby_data[15898:end])
-    cmpd = DistributionComparison(d1,d2,moby_data,7.0)
+    d2 = fit(Poisson, moby_data[15898:end])
+    cmpd = DistributionComparison(d1, d2, moby_data, 7.0)
     @test cmpd.xmin == 7.0
     @test cmpd.sig_level == 0.05
     @test cmpd.V_test_stat ≈ 4.448483568

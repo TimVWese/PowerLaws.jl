@@ -58,54 +58,56 @@ Function was implemented according to this [Non nested model selection for spati
 # Returns
 - `DistributionComparison`: Struct containing all necessary information about comparison.
 """
-function DistributionComparison(d1::ContinuousPowerLaw, d2::Type{<:ContinuousUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
+function DistributionComparison(d1::ContinuousPowerLaw, d2::Type{<:ContinuousUnivariateDistribution}, data::AbstractArray; sig_level=0.05)
     xmin = d1.θ
     data = sort(data)
-    data = data[findfirst(x -> x >= xmin, data): end]
+    data = data[findfirst(x -> x >= xmin, data):end]
     d2 = fit(d2, data)
 
-    _compare_distributions(d1,d2,data,xmin,sig_level)
+    _compare_distributions(d1, d2, data, xmin, sig_level)
 end
 
-function DistributionComparison(d1::DiscretePowerLaw, d2::Type{<:DiscreteUnivariateDistribution}, data::AbstractArray; sig_level = 0.05)
+function DistributionComparison(d1::DiscretePowerLaw, d2::Type{<:DiscreteUnivariateDistribution}, data::AbstractArray; sig_level=0.05)
     xmin = d1.θ
     data = sort(data)
-    data = data[findfirst(x -> x >= xmin, data): end]
+    data = data[findfirst(x -> x >= xmin, data):end]
     d2 = fit(d2, data)
 
-    _compare_distributions(d1,d2,data,xmin,sig_level)
+    _compare_distributions(d1, d2, data, xmin, sig_level)
 end
 
-function DistributionComparison(d1::Type{<:UnivariateDistribution}, d2::Type{<:UnivariateDistribution}, data::AbstractArray, xmin::Number = 0; sig_level = 0.05)
+function DistributionComparison(d1::Type{<:UnivariateDistribution}, d2::Type{<:UnivariateDistribution}, data::AbstractArray, xmin::Number=0; sig_level=0.05)
     if !(((d1 <: ContinuousUnivariateDistribution) && (d2 <: ContinuousUnivariateDistribution)) ||
-            ((d1 <: DiscreteUnivariateDistribution) && (d2 <: DiscreteUnivariateDistribution)))
+         ((d1 <: DiscreteUnivariateDistribution) && (d2 <: DiscreteUnivariateDistribution)))
         throw(ArgumentError("Both distributions should be either continuous or discrete."))
     end
 
     if (xmin == 0)
-        if (d1 <: DiscreteUnivariateDistribution) xmin = 1 end
+        if (d1 <: DiscreteUnivariateDistribution)
+            xmin = 1
+        end
         xmin = minimum(data)
     else
         data = sort(data)
-        data = data[findfirst(x -> x >= xmin, data): end]
+        data = data[findfirst(x -> x >= xmin, data):end]
     end
     d1 = fit(d1, data)
     d2 = fit(d2, data)
 
-    _compare_distributions(d1,d2,data,xmin,sig_level)
+    _compare_distributions(d1, d2, data, xmin, sig_level)
 end
 
-function DistributionComparison(d1::DiscreteUnivariateDistribution, d2::DiscreteUnivariateDistribution, data::AbstractArray, xmin::Number = 1; sig_level = 0.05)
-   _compare_distributions(d1,d2,data,xmin,sig_level) 
+function DistributionComparison(d1::DiscreteUnivariateDistribution, d2::DiscreteUnivariateDistribution, data::AbstractArray, xmin::Number=1; sig_level=0.05)
+    _compare_distributions(d1, d2, data, xmin, sig_level)
 end
 
-function DistributionComparison(d1::ContinuousUnivariateDistribution, d2::ContinuousUnivariateDistribution, data::AbstractArray, xmin::Number = 0; sig_level = 0.05)
-   _compare_distributions(d1,d2,data,xmin,sig_level) 
+function DistributionComparison(d1::ContinuousUnivariateDistribution, d2::ContinuousUnivariateDistribution, data::AbstractArray, xmin::Number=0; sig_level=0.05)
+    _compare_distributions(d1, d2, data, xmin, sig_level)
 end
 
 function _compare_distributions(d1::UnivariateDistribution, d2::UnivariateDistribution, data::AbstractArray, xmin::Number, sig_level)
     data = sort(data)
-    xmin == 0 ? xmin = minimum(data) : data = data[findfirst(x -> x >= xmin, data): end]
+    xmin == 0 ? xmin = minimum(data) : data = data[findfirst(x -> x >= xmin, data):end]
     # Vuong's test
     log_likelihood_ratio = map(Base.Fix1(logpdf, d1), data) - map(Base.Fix1(logpdf, d2), data)
     n = length(log_likelihood_ratio)
@@ -114,23 +116,27 @@ function _compare_distributions(d1::UnivariateDistribution, d2::UnivariateDistri
     test_stat = sqrt(n) * m / standard_deviation
     v_p_val = cdf(Normal(), test_stat)
     v_preff_distr = 0
-    if (test_stat > cdf(Normal(), 1 - sig_level/2))
+    if (test_stat > cdf(Normal(), 1 - sig_level / 2))
         v_preff_distr = 1
-    elseif (test_stat < -cdf(Normal(), 1 - sig_level/2))
+    elseif (test_stat < -cdf(Normal(), 1 - sig_level / 2))
         v_preff_distr = 2
     end
-    
+
     # Clarke's test
     # b = number of positive values in log_likelihood_ratio
-    b = sum(x->x > 0 ? 1 : 0, log_likelihood_ratio)
+    b = sum(x -> x > 0 ? 1 : 0, log_likelihood_ratio)
     preff_distr = 0
-    if (b >= n/2)
-        pval = 2 * (1 - cdf(Binomial(n,0.5),b-1))
-        if (pval <= sig_level) preff_distr = 1 end
+    if (b >= n / 2)
+        pval = 2 * (1 - cdf(Binomial(n, 0.5), b - 1))
+        if (pval <= sig_level)
+            preff_distr = 1
+        end
     else
-        pval = 2 * (cdf(Binomial(n,0.5),b))
-        if (pval <= sig_level) preff_distr = 2 end
+        pval = 2 * (cdf(Binomial(n, 0.5), b))
+        if (pval <= sig_level)
+            preff_distr = 2
+        end
     end
 
-    return DistributionComparison(data,log_likelihood_ratio,sig_level,xmin,test_stat,v_p_val,v_preff_distr,b,pval,preff_distr)
+    return DistributionComparison(data, log_likelihood_ratio, sig_level, xmin, test_stat, v_p_val, v_preff_distr, b, pval, preff_distr)
 end
