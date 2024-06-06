@@ -66,7 +66,7 @@ end
     cmpd = DistributionComparison(d1,d2,data)
     @test typeof(cmpd) == DistributionComparison
     @test cmpd.data == data
-    @test cmpd.log_likehoods_ratio == ll_hoods_r
+    @test cmpd.log_likelihood_ratio == ll_hoods_r
     @test cmpd.xmin == 1
     @test cmpd.sig_level == 0.05
     @test cmpd.V_test_stat ≈ 5.74635401
@@ -88,7 +88,7 @@ end
     cmpd = DistributionComparison(d1,Poisson,data)
     @test typeof(cmpd) == DistributionComparison
     @test cmpd.data == data
-    @test cmpd.log_likehoods_ratio == ll_hoods_r
+    @test cmpd.log_likelihood_ratio == ll_hoods_r
     @test cmpd.xmin == 1
     @test cmpd.sig_level == 0.05
     @test cmpd.V_test_stat ≈ 5.74635401
@@ -110,7 +110,7 @@ end
     cmpd = DistributionComparison(DiscretePowerLaw,Poisson,data)
     @test typeof(cmpd) == DistributionComparison
     @test cmpd.data == data
-    @test cmpd.log_likehoods_ratio == ll_hoods_r
+    @test cmpd.log_likelihood_ratio == ll_hoods_r
     @test cmpd.xmin == 1
     @test cmpd.sig_level == 0.05
     @test cmpd.V_test_stat ≈ 5.74635401

@@ -11,14 +11,14 @@ Continuios power law with probability density function ![equation](http://www.sc
 #### DiscretePowerLaw(alfa,xmin)
 Discrete power law with probability mass function ![equation](http://www.sciweavers.org/tex2img.php?eq=p%28x%29%20%3D%5Cbegin%7Bcases%7D%20%5Cfrac%7Bx%5E%7B-%5Calpha%7D%7D%7Bzeta%28%20%5Calpha%20%2C%20%5Ctheta%20%29%7D%20%20%20%26%20x%20%20%5Cgeq%20%20%5Ctheta%20%5C%5C0%20%26%20x%20%20%3C%20%5Ctheta%20%5Cend%7Bcases%7D%20&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0%22%20align=%22center%22%20border=%220%22%20alt=%22p(x)%20=\begin{cases}%20\frac{x^{-\alpha}}{zeta(%20\alpha%20,%20\theta%20)}%20%20%20&%20x%20%20\geq%20%20\theta%20\\0%20&%20x%20%20%3C%20\theta%20\end{cases}%20%22%20width=%22201%22%20height=%2254%22)
 
-#### immutable DistributionComparison (data::AbstractArray, log_likehoods_ratio::AbstractArray, sig_level::Float64, xmin::Number, V_test_stat::Float64, V_p_val::Float64, V_preff_distr::Int64, C_b::Int64, C_p_val::Float64, C_preff_distr::Int64,)
+#### immutable DistributionComparison (data::AbstractArray, log_likelihood_ratio::AbstractArray, sig_level::Float64, xmin::Number, V_test_stat::Float64, V_p_val::Float64, V_preff_distr::Int64, C_b::Int64, C_p_val::Float64, C_preff_distr::Int64,)
 
 Data type for distribution comparison.
 
 **Parameters:**
 
 * data: array which according which should be distributions compared
-* log_likehoods_ratio: log likehood ratio of data
+* log_likelihood_ratio: log likehood ratio of data
 * sig_level: sigma level
 * xmin: smallest element which was used for comparing distributions
 * V_test_stat: Vuong test statistic

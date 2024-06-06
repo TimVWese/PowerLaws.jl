@@ -1,9 +1,26 @@
+"""
+  bootstrap
+
+Bootstrap method for estimating the parameters of a power law distribution.
+To quantify the uncertainty in our estimate for xmin you can use bootstrap method. More information can be found in this document [Power-law distributions in empirical data](http://arxiv.org/pdf/0706.1062v2.pdf).
+
+# Arguments
+
+- `data::AbstractArray`: Data to be tested.
+- `d::UnivariateDistribution`: Distribution to be tested (`ContinuousPowerLaw` or `DiscretePowerLaw`).
+- `no_of_sims::Int64`: Number of simulations. Default is `10`.
+- `xmins::AbstractArray`: Array of xmins to be tested, default is `data`.
+- `xmax::Int64`: Maximum value of data to be considered. Default is `1e5`.
+- `seed::Int64`: Seed for random number generator. Default is `0`.
+
+# Returns
+- `statistic::Array{Tuple{UnivariateDistribution, Float64}}`: Array of tuples containing the distribution and the Kolmogorov-Smirnov distance between the data and the distribution.
+"""
 function bootstrap(data::AbstractArray,d::UnivariateDistribution;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
   n = length(data)
 
   seed == 0 ? Random.seed!() : Random.seed!(seed)
   statistic = Array{Tuple{UnivariateDistribution, Float64}}(undef, no_of_sims)
-#  statistic = Array(Tuple{typeof(d),Float64},no_of_sims)
   for i=1:no_of_sims
     sim_data = sample(data, n, replace=true)
     statistic[i] =estimate_parameters(sim_data,typeof(d),xmins = xmins,xmax = xmax)
@@ -21,6 +38,24 @@ function bootstrap(data::AbstractArray,distribution::Type{DiscretePowerLaw};no_o
   bootstrap(data,d,no_of_sims = no_of_sims,xmins = xmins,xmax = xmax,seed =seed)
 end
 
+"""
+  bootstrap_p
+
+Performs a bootstrapping hypothesis test to determine whether a power law distribution is plausible.
+Inspired by R [poweRlaw](http://arxiv.org/pdf/1407.3492v1.pdf) documentation.
+
+# Arguments
+- `data::AbstractArray`: Data to be tested.
+- `d::UnivariateDistribution`: Distribution to be tested (`ContinuousPowerLaw` or `DiscretePowerLaw`).
+- `no_of_sims::Int64`: Number of simulations. Default is `10`.
+- `xmins::AbstractArray`: Array of xmins to be tested, default is `data`.
+- `xmax::Int64`: Maximum value of data to be considered. Default is `1e5`.
+- `seed::Int64`: Seed for random number generator. Default is `0`.
+
+# Returns
+- `statistic::Array{Tuple{UnivariateDistribution, Float64}}`: Array of tuples containing the distribution and the Kolmogorov-Smirnov distance between the data and the distribution.
+- `P::Float64`: p-value of the hypothesis test.
+"""
 function bootstrap_p(data::AbstractArray,d::UnivariateDistribution;no_of_sims::Int64 = 10,xmins::AbstractArray = [],xmax::Int64 = round(Int,1e5),seed::Int64 = 0)
   sort_data = sort(data)
   α,θ = params(d)
