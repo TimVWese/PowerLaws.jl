@@ -1,98 +1,88 @@
-struct dis_powerlaw <: DiscreteUnivariateDistribution
+struct DiscretePowerLaw <: DiscreteUnivariateDistribution
     α::Float64
     θ::Float64
 
-    function dis_powerlaw(α::Real, θ::Real)
-        @check_args(dis_powerlaw, α > zero(α) && θ > zero(θ))
+    function DiscretePowerLaw(α::Real, θ::Real)
+        if !(α > zero(α) && θ > zero(θ))
+            throw(ArgumentError("Both shape and scale parameters must be positive."))
+        end
         new(α, θ)
     end
-    dis_powerlaw(α::Real) = dis_powerlaw(α, 1.0)
-    dis_powerlaw() = new(1.0, 1.0)
+    DiscretePowerLaw(α::Real) = DiscretePowerLaw(α, 1.0)
+    DiscretePowerLaw() = new(1.0, 1.0)
 end
-@distr_support dis_powerlaw d.θ Inf
+@distr_support DiscretePowerLaw d.θ Inf
 #### Parameters
 
-shape(d::dis_powerlaw) = d.α
-scale(d::dis_powerlaw) = d.θ
-params(d::dis_powerlaw) = (d.α, d.θ)
+shape(d::DiscretePowerLaw) = d.α
+scale(d::DiscretePowerLaw) = d.θ
+params(d::DiscretePowerLaw) = (d.α, d.θ)
 
 
 #### Evaluation
 
-function pdf(d::dis_powerlaw, x::Float64)
+function pdf(d::DiscretePowerLaw, x::Real)
     (α, θ) = params(d)
-    x >= θ ?  x ^ (-α) / zeta(α, θ) : 0.0
+    x >= θ ? x^(-α) / zeta(α, θ) : 0.0
 end
 
-function pdf(d::dis_powerlaw, x::AbstractArray)
-  (α, θ) = params(d)
-  z = zeta(α, θ)
-  pdfs = Array(Float64,0)
-  for num in x
-    push!(pdfs,(num >= θ ?  num ^ (-α) / z : 0.0))
-  end
-  return pdfs
+function pdf(d::DiscretePowerLaw, x::AbstractArray{<:Real})
+    (α, θ) = params(d)
+    z = zeta(α, θ)
+    pdfs = [num >= θ ? num^(-α) / z : 0.0 for num in x]
+    return pdfs
 end
 
-function logpdf(d::dis_powerlaw, x::Float64)
+function logpdf(d::DiscretePowerLaw, x::Real)
     (α, θ) = params(d)
     x >= θ ? -log(zeta(α, θ)) - α * log(x) : -Inf
 end
-function logpdf(d::dis_powerlaw, x::AbstractArray)
-  (α, θ) = params(d)
-  log_zeta = -log(zeta(α, θ))
-  lpdfs = Array(Float64,0)
-  for num in x
-    push!(lpdfs,(num >= θ ? log_zeta - α * log(num) : -Inf))
-  end
-  return lpdfs
+function logpdf(d::DiscretePowerLaw, x::AbstractArray{<:Real})
+    (α, θ) = params(d)
+    log_zeta = -log(zeta(α, θ))
+    lpdfs = [num >= θ ? log_zeta - α * log(num) : -Inf for num in x]
+    return lpdfs
 end
 
-function ccdf(d::dis_powerlaw, x::Float64)
+function ccdf(d::DiscretePowerLaw, x::Float64)
     (α, θ) = params(d)
     x >= θ ? zeta(α, x) / zeta(α, θ) : 1.0
 end
 
-function ccdf(d::dis_powerlaw, x::AbstractArray)
+function ccdf(d::DiscretePowerLaw, x::AbstractArray{<:Real})
     (α, θ) = params(d)
     z = zeta(α, θ)
-    ccdfs = Array(Float64,0)
-    for num in x
-      push!(ccdfs,(num >= θ ? zeta(α, num) / z : 1.0))
-    end
+    ccdfs = [num >= θ ? zeta(α, num) / z : 1.0 for num in x]
     return ccdfs
 end
 
-cdf(d::dis_powerlaw, x::Float64) = 1.0 - ccdf(d, x)
-cdf(d::dis_powerlaw, x::AbstractArray) = 1.0 - ccdf(d, x)
+cdf(d::DiscretePowerLaw, x::Float64) = 1.0 - ccdf(d, x)
+cdf(d::DiscretePowerLaw, x::AbstractArray{<:Real}) = 1.0 .- ccdf(d, x)
 
-logccdf(d::dis_powerlaw, x::Float64) = log(ccfd(d,x))
-logccdf(d::dis_powerlaw, x::AbstractArray) = log(ccfd(d,x))
+logccdf(d::DiscretePowerLaw, x::Float64) = log(ccfd(d, x))
+logccdf(d::DiscretePowerLaw, x::AbstractArray{<:Real}) = log.(ccfd(d, x))
 
-logcdf(d::dis_powerlaw, x::Float64) = log(cdf(d, x))
-logcdf(d::dis_powerlaw, x::AbstractArray) = log(cdf(d, x))
+logcdf(d::DiscretePowerLaw, x::Float64) = log(cdf(d, x))
+logcdf(d::DiscretePowerLaw, x::AbstractArray{<:Real}) = log.(cdf(d, x))
 
-cquantile(d::dis_powerlaw, p::Float64) = (d.θ -0.5) *((p) ^ (-1.0 / (d.α - 1.0))) + 0.5
-quantile(d::dis_powerlaw, p::Float64) = cquantile(d, 1.0 - p)
+cquantile(d::DiscretePowerLaw, p::Float64) = (d.θ - 0.5) * ((p)^(-1.0 / (d.α - 1.0))) + 0.5
+quantile(d::DiscretePowerLaw, p::Float64) = cquantile(d, 1.0 - p)
 
 
 #### Sampling
 
-rand(d::dis_powerlaw) = floor(quantile(d,rand()))
+rand(d::DiscretePowerLaw) = floor(quantile(d, rand()))
 
 
 
 ## Fitting
 #The discrete MLE of α, is not available, instead we use the approximation
-function fit_mle{T <: Real}(::Type{dis_powerlaw}, x::AbstractArray{T})
+function fit_mle(::Type{DiscretePowerLaw}, x::AbstractArray{<:Real})
     θ = minimum(x)
     n = length(x)
-    lθ = log(θ-0.5)
-    temp1 = zero(T)
-    for i=1:n
-        temp1 += log(x[i]) - lθ
-    end
-    α = 1.0 +n*(temp1)^(-1.0)
+    lθ = log(θ - 0.5)
+    temp1 = sum(log.(x) .- lθ)
+    α = 1.0 + n * (temp1)^(-1.0)
 
-    return dis_powerlaw(α, θ)
+    return DiscretePowerLaw(α, θ)
 end
