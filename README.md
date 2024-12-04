@@ -4,11 +4,13 @@
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://timvwese.github.io/PowerLaws.jl/dev/)
 
 
-This package is implemented according to [POWER-LAW DISTRIBUTIONS IN EMPIRICAL DATA](http://arxiv.org/pdf/0706.1062v2.pdf)
+This package is implemented according to [POWER-LAW DISTRIBUTIONS IN EMPIRICAL DATA](http://arxiv.org/pdf/0706.1062v2.pdf).
+
+
 This is a maintained fork of the archive [PowerLaws.jl](https://github.com/johnybx/PowerLaws.jl).
 Currently, the functionality replicates the original package, but with some compatibility upgrades, and modernised package structure.
 This will probably change in the future.
-Braking changes are however introduced by renaming structs and functions:
+Breaking changes are however introduced by renaming structs and functions:
 - `powerlaw_con` -> `ContinuousPowerLaw`
 - `powerlaw_dis` -> `DiscretePowerLaw`
 - `estimate_xmin` -> `estimate_parameters`
