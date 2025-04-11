@@ -1,6 +1,6 @@
 # PowerLaws.jl
 
-[![Build Status](https://github.com/TimVWese/PowerLaws.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/TimVWese/NetworkJumpProcesses.jl/actions/workflows/CI.yml?query=branch%3Amaster)
+[![Build Status](https://github.com/TimVWese/PowerLaws.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/TimVWese/PowerLaws.jl/actions/workflows/CI.yml?query=branch%3Amaster)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://timvwese.github.io/PowerLaws.jl/dev/)
 
 
