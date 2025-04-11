@@ -11,6 +11,10 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
+[compat]
+Compat = "4"
+julia = "^1.8"
+
 [extras]
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
@@ -19,6 +23,3 @@ TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [targets]
 test = ["DelimitedFiles", "Test", "TestItemRunner", "TestItems"]
-
-[compat]
-julia="^1.8"
