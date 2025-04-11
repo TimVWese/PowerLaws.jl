@@ -10,7 +10,7 @@ function init_xmins(data::AbstractArray, xmins::AbstractArray, xmax::Int64)
     xmins = xmins[1:end]
     if xmins[1] <= 0
       println("removing elements smaller than 0")
-      xmins = xmins[findfirst(x -> x > 0, xmins), end]
+      xmins = xmins[findfirst(x -> x > 0, xmins):end]
     end
   else
     real_xmins = [haskey(bins_data, x) for x in xmins]
@@ -87,7 +87,7 @@ function estimate_parameters(data::AbstractArray, distribution::Type{DiscretePow
 
   sorted_data, bins_data, xmins = init_xmins(data, xmins, xmax)
   if xmins[1] < 1
-    xmins = xmins[findfirst(x -> x >= 1), end]
+    xmins = xmins[findfirst(x -> x >= 1):end]
   end
 
   _estimate_parameters(sorted_data, bins_data, distribution, xmins, xmax)

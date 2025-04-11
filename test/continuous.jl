@@ -1,5 +1,5 @@
 @testitem "Continuous x_min estimation" begin
-    using DelimitedFiles
+    using DelimitedFiles, Distributions
 
     data_dir = joinpath(dirname(pathof(PowerLaws)), "..", "data")
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
@@ -9,6 +9,10 @@
     @test est[1].α ≈ 1.93352404
     @test est[1].θ == 26.0
     @test est[2] ≈ 0.0320477608
+
+    dist = fit(ContinuousPowerLaw, moby_data[moby_data .>= est[1].θ])
+    @test est[1].α ≈ shape(dist)
+    @test est[1].θ ≈ scale(dist)
 
     est = estimate_parameters(collect(1:100), ContinuousPowerLaw)
     @test est[1].α ≈ 9.17882479
@@ -23,6 +27,7 @@ end
 
 @testitem "Continuous x_min given options" begin
     using DelimitedFiles
+    using Distributions
 
     data_dir = joinpath(dirname(pathof(PowerLaws)), "..", "data")
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
@@ -31,6 +36,11 @@ end
     @test est[1].α ≈ 1.951428245
     @test est[1].θ == 20.0
     @test est[2] ≈ 0.0441609421
+
+    est = estimate_parameters(moby_data, ContinuousPowerLaw, xmins=[1,])
+    dist = fit(ContinuousPowerLaw, moby_data)
+    @test est[1].α ≈ shape(dist)
+    @test est[1].θ ≈ scale(dist)
 end
 
 @testitem "Continuous bootstrap" begin
