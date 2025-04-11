@@ -76,7 +76,13 @@ rand(d::DiscretePowerLaw) = floor(quantile(d, rand()))
 
 
 ## Fitting
-#The discrete MLE of α, is not available, instead we use the approximation
+"""
+    fit_mle(::Type{DiscretePowerLaw}, x::AbstractArray{<:Real})
+
+Fits a discrete power law distribution to the data using **an approximation to**
+the maximum likelihood estimation (MLE). The `x_min` value is the minimum value
+of the data.
+"""
 function fit_mle(::Type{DiscretePowerLaw}, x::AbstractArray{<:Real})
     θ = minimum(x)
     n = length(x)

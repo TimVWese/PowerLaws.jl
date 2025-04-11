@@ -92,10 +92,14 @@ rand(d::ContinuousPowerLaw) = quantile(d, rand())
 
 
 ## Fitting
+"""
+    fit_mle(::Type{ContinuousPowerLaw}, x::AbstractArray{<:Real})
 
+Fit a `ContinuousPowerLaw` distribution to the data using maximum likelihood
+estimation (MLE). The `x_min` value is the minimum value of the data.
+"""
 function fit_mle(::Type{ContinuousPowerLaw}, x::AbstractArray{<:Real})
     θ = minimum(x)
-
     n = length(x)
     lθ = log(θ)
     temp1 = sum(log.(x) .- lθ)
@@ -103,3 +107,4 @@ function fit_mle(::Type{ContinuousPowerLaw}, x::AbstractArray{<:Real})
 
     return ContinuousPowerLaw(α, θ)
 end
+

@@ -8,6 +8,7 @@ population = vec(readdlm(pkg_path(["data", "population.txt"]), ' ', '\n'))
 
 @testitem "Discrete x_min estimation" begin
     using DelimitedFiles
+    using Distributions
 
     data_dir = joinpath(dirname(pathof(PowerLaws)), "..", "data")
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
@@ -18,6 +19,10 @@ population = vec(readdlm(pkg_path(["data", "population.txt"]), ' ', '\n'))
     @test est[1].θ == 7.0
     @test est[2] ≈ 0.00922886388
 
+    dist = fit(DiscretePowerLaw, moby_data[moby_data .>= est[1].θ])
+    @test est[1].α ≈ shape(dist)
+    @test est[1].θ ≈ scale(dist)
+
     est1 = estimate_parameters(cities, DiscretePowerLaw)
     @test est1[1].α ≈ 1.61439261
     @test est1[1].θ == 1021.0
@@ -26,6 +31,7 @@ end
 
 @testitem "Discrete x_min from options" begin
     using DelimitedFiles
+    using Distributions
 
     data_dir = joinpath(dirname(pathof(PowerLaws)), "..", "data")
     moby_data = vec(readdlm(joinpath(data_dir, "moby_dick.txt"), Int))
@@ -34,6 +40,11 @@ end
     @test est[1].α ≈ 1.95381938
     @test est[1].θ == 10.0
     @test est[2] ≈ 0.0122405536
+
+    est = estimate_parameters(moby_data, DiscretePowerLaw, xmins=[1,])
+    dist = fit(DiscretePowerLaw, moby_data)
+    @test est[1].α ≈ shape(dist)
+    @test est[1].θ ≈ scale(dist)
 end
 
 @testitem "Discrete bootstrap" begin
