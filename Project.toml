@@ -1,7 +1,7 @@
 name = "PowerLaws"
 uuid = "dddc953c-20d8-47dd-8cc1-765c34677cac"
 authors = ["Ján Brechtl", "Tim Van Wesemael <tim.vanwesemael@ugent.be>"]
-version = "0.3"
+version = "0.4"
 
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
