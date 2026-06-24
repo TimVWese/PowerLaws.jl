@@ -1,8 +1,6 @@
 module PowerLaws
 using StatsBase
 using Distributions
-using Optim
-using Compat
 using Random
 using SpecialFunctions: zeta
 import Distributions: rand, shape, pdf, ccdf, scale, params, cdf, cquantile,

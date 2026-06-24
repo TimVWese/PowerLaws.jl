@@ -59,8 +59,8 @@ end
 cdf(d::DiscretePowerLaw, x::Float64) = 1.0 - ccdf(d, x)
 cdf(d::DiscretePowerLaw, x::AbstractArray{<:Real}) = 1.0 .- ccdf(d, x)
 
-logccdf(d::DiscretePowerLaw, x::Float64) = log(ccfd(d, x))
-logccdf(d::DiscretePowerLaw, x::AbstractArray{<:Real}) = log.(ccfd(d, x))
+logccdf(d::DiscretePowerLaw, x::Float64) = log(ccdf(d, x))
+logccdf(d::DiscretePowerLaw, x::AbstractArray{<:Real}) = log.(ccdf(d, x))
 
 logcdf(d::DiscretePowerLaw, x::Float64) = log(cdf(d, x))
 logcdf(d::DiscretePowerLaw, x::AbstractArray{<:Real}) = log.(cdf(d, x))
@@ -71,7 +71,7 @@ quantile(d::DiscretePowerLaw, p::Float64) = cquantile(d, 1.0 - p)
 
 #### Sampling
 
-rand(d::DiscretePowerLaw) = floor(quantile(d, rand()))
+rand(rng::AbstractRNG, d::DiscretePowerLaw) = floor(Int, quantile(d, rand(rng)))
 
 
 

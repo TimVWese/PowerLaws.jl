@@ -116,9 +116,9 @@ function _compare_distributions(d1::UnivariateDistribution, d2::UnivariateDistri
     test_stat = sqrt(n) * m / standard_deviation
     v_p_val = cdf(Normal(), test_stat)
     v_preff_distr = 0
-    if (test_stat > cdf(Normal(), 1 - sig_level / 2))
+    if test_stat > quantile(Normal(), 1 - sig_level / 2)
         v_preff_distr = 1
-    elseif (test_stat < -cdf(Normal(), 1 - sig_level / 2))
+    elseif test_stat < -quantile(Normal(), 1 - sig_level / 2)
         v_preff_distr = 2
     end
 

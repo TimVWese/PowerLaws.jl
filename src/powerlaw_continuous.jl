@@ -51,10 +51,10 @@ function pdf(d::ContinuousPowerLaw, x::Real)
     x >= θ ? ((α - 1.0) / θ) * ((x / θ)^(-α)) : 0.0
 end
 
-function pdf(d::ContinuousPowerLaw, x::AbstractArray)
+function pdf(d::ContinuousPowerLaw, x::AbstractArray{<:Real})
     (α, θ) = params(d)
     cons = ((α - 1.0) / θ)
-    pdfs = [num >= θ ? cons * ((x / θ)^(-α)) : 0.0 for num in x]
+    pdfs = [num >= θ ? cons * ((num / θ)^(-α)) : 0.0 for num in x]
     return pdfs
 end
 
@@ -78,7 +78,7 @@ end
 
 cdf(d::ContinuousPowerLaw, x::Float64) = 1.0 - ccdf(d, x)
 
-logccdf(d::ContinuousPowerLaw, x::Float64) = log(ccfd(d, x))
+logccdf(d::ContinuousPowerLaw, x::Float64) = log(ccdf(d, x))
 
 logcdf(d::ContinuousPowerLaw, x::Float64) = log(cdf(d, x))
 
@@ -88,7 +88,7 @@ quantile(d::ContinuousPowerLaw, p::Float64) = cquantile(d, 1.0 - p)
 
 #### Sampling
 
-rand(d::ContinuousPowerLaw) = quantile(d, rand())
+rand(rng::AbstractRNG, d::ContinuousPowerLaw) = quantile(d, rand(rng))
 
 
 ## Fitting

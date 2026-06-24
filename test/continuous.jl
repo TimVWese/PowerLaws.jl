@@ -76,3 +76,95 @@ end
     @test cmpd.C_p_val ≈ 0.0
     @test cmpd.C_preff_distr == 1
 end
+
+@testitem "Continuous distribution functions" begin
+    using Distributions
+
+    α, θ = 2.5, 2.0
+    d = ContinuousPowerLaw(α, θ)
+
+    @test params(d) == (α, θ)
+    @test shape(d) == α
+    @test scale(d) == θ
+    @test mode(d) == θ
+    @test params(ContinuousPowerLaw(3.0)) == (3.0, 1.0)
+    @test params(ContinuousPowerLaw()) == (1.0, 1.0)
+
+    # pdf / logpdf compared with the closed form (x below θ is outside the support)
+    for x in (1.0, 2.0, 5.0, 10.0)
+        expected = x < θ ? 0.0 : ((α - 1.0) / θ) * (x / θ)^(-α)
+        @test pdf(d, x) ≈ expected
+        @test logpdf(d, x) ≈ (x < θ ? -Inf : log(expected))
+    end
+
+    # ccdf / cdf / logccdf / logcdf
+    for x in (2.0, 5.0, 10.0)
+        @test ccdf(d, x) ≈ (x / θ)^(1.0 - α)
+        @test cdf(d, x) ≈ 1.0 - (x / θ)^(1.0 - α)
+        @test logccdf(d, x) ≈ log((x / θ)^(1.0 - α))
+        @test logcdf(d, x) ≈ log(1.0 - (x / θ)^(1.0 - α))
+    end
+
+    # quantile / cquantile invert cdf / ccdf
+    for p in (0.1, 0.5, 0.9)
+        @test cdf(d, quantile(d, p)) ≈ p
+        @test ccdf(d, cquantile(d, p)) ≈ p
+    end
+
+    # moments (evaluated where they are finite, NaN/Inf otherwise)
+    @test mean(ContinuousPowerLaw(2.5, 2.0)) ≈ 2.0 * (1.5 / 0.5)
+    @test mean(ContinuousPowerLaw(1.5, 2.0)) == Inf
+    @test var(ContinuousPowerLaw(4.0, 2.0)) ≈ (2.0^2 * 3.0) / (2.0^2 * 1.0)
+    @test var(ContinuousPowerLaw(2.5, 1.0)) == Inf
+    @test median(ContinuousPowerLaw(2.5, 2.0)) ≈ 2.0 * 2.0^(1.0 / 1.5)
+    @test isnan(median(ContinuousPowerLaw(0.5, 1.0)))
+    @test skewness(ContinuousPowerLaw(5.0, 1.0)) ≈ (2.0 * 5.0 / 1.0) * sqrt(2.0 / 4.0)
+    @test isnan(skewness(ContinuousPowerLaw(4.0, 1.0)))
+    @test kurtosis(ContinuousPowerLaw(6.0, 1.0)) ≈
+          (6.0 * (5.0^3 + 5.0^2 - 6.0 * 5.0 - 2.0)) / (5.0 * 2.0 * 1.0)
+    @test isnan(kurtosis(ContinuousPowerLaw(5.0, 1.0)))
+    @test entropy(d) ≈ log(θ / (α - 1.0)) + 1.0 / (α - 1.0) + 1.0
+end
+
+@testitem "Continuous pdf/logpdf on arrays match scalars" begin
+    using Distributions
+
+    # Regression: the array `pdf` method used to evaluate `x` (the whole array)
+    # instead of the loop variable, so it never matched the scalar method.
+    d = ContinuousPowerLaw(2.5, 2.0)
+    xs = [0.5, 2.0, 3.0, 10.0]
+    @test pdf(d, xs) == [pdf(d, x) for x in xs]
+    @test logpdf(d, xs) == [logpdf(d, x) for x in xs]
+end
+
+@testitem "Continuous sampling" begin
+    using Distributions, Random
+
+    d = ContinuousPowerLaw(2.5, 3.0)
+    @test rand(d) isa Float64
+    @test rand(d) >= 3.0
+
+    s = rand(d, 500)
+    @test s isa Vector{Float64}
+    @test length(s) == 500
+    @test all(>=(3.0), s)
+
+    # rand integrates with an explicit RNG, so it is reproducible
+    @test rand(MersenneTwister(42), d, 10) == rand(MersenneTwister(42), d, 10)
+end
+
+@testitem "Continuous constructor validation" begin
+    @test_throws ArgumentError ContinuousPowerLaw(-1.0, 1.0)
+    @test_throws ArgumentError ContinuousPowerLaw(0.0, 1.0)
+    @test_throws ArgumentError ContinuousPowerLaw(1.0, -1.0)
+    @test_throws ArgumentError ContinuousPowerLaw(1.0, 0.0)
+end
+
+@testitem "Continuous bootstrap_p" begin
+    data = Float64.([1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 5, 6, 7, 8, 9,
+        10, 12, 15, 20, 30, 40, 55, 70, 100])
+    stats, p = bootstrap_p(data, ContinuousPowerLaw, no_of_sims=5, seed=1)
+    @test length(stats) == 5
+    @test all(s -> s[1] isa ContinuousPowerLaw, stats)
+    @test 0.0 <= p <= 1.0
+end

@@ -30,21 +30,6 @@ function _estimate_parameters(sorted_data::AbstractArray, bins_data::Dict{<:Real
   for xmin in xmins
     fit_data = sorted_data[bins_data[xmin]:end]
     f = fit(distribution, fit_data)
-
-    negloglike(alpha) = begin
-      d = distribution(alpha[1], f.θ)
-      r = -sum(logpdf(d, fit_data))
-      if (Inf == r || -Inf == r)
-        r = 1e12
-      end
-      return r
-    end
-    try
-      opt_alfa = fminbox(DifferentiableFunction(negloglike), [f.α], [1.0], [Inf])
-      f = distribution(opt_alfa.minimum[1], f.θ)
-    catch
-      #if fminbox throws error it means that function cannot be optimized
-    end
     if (f.α == Inf)
       continue
     end
@@ -86,8 +71,8 @@ function estimate_parameters(data::AbstractArray, distribution::Type{DiscretePow
   end
 
   sorted_data, bins_data, xmins = init_xmins(data, xmins, xmax)
-  if xmins[1] < 1
-    xmins = xmins[findfirst(x -> x >= 1):end]
+  if !isempty(xmins) && xmins[1] < 1
+    xmins = xmins[findfirst(x -> x >= 1, xmins):end]
   end
 
   _estimate_parameters(sorted_data, bins_data, distribution, xmins, xmax)

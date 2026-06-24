@@ -25,8 +25,7 @@ function kolmogorov_smirnov_test(dat::AbstractArray, d::ContinuousUnivariateDist
   return KS
 end
 
-function kolmogorov_smirnov_test(dat::AbstractArray, d::DiscreteUnivariateDistribution, xmin::Int64, xmax::Int64=round(Int, 1e5))
-  _, xmin = params(d)
+function kolmogorov_smirnov_test(dat::AbstractArray, d::DiscreteUnivariateDistribution, xmin::Number=params(d)[2], xmax::Int64=round(Int, 1e5))
   data = Int64.(round.(sort(dat)))
   max_indx = findlast(x -> x <= xmax, data)
   min_indx = findfirst(x -> x >= xmin, data)
@@ -41,19 +40,16 @@ function kolmogorov_smirnov_test(dat::AbstractArray, d::DiscreteUnivariateDistri
 end
 
 #helper function
-function create_histogram(x::AbstractArray)
-  h = zeros(typeof(x[1]), 0)
+function create_histogram(xs::AbstractArray)
+  h = zeros(eltype(xs), 0)
   max = 0
-  d = 0
-  for i = 1:length(x)
-    if max < x[i]
-      for j = 1:(x[i]-max)
-        push!(h, 0)
-      end
-      h[x[i]] = 1
-      max = x[i]
+  for x in xs
+    if max < x
+      append!(h, zeros(eltype(xs), x - max))
+      h[x] = 1
+      max = x
     else
-      h[x[i]] += 1
+      h[x] += 1
     end
   end
   return h
